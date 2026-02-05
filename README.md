@@ -12,22 +12,28 @@ and can do normal download and install activities.
 
 1) Install version 3.2.0-snapshot4 or greater of the TauP Toolkit.
 This is available here:
+
 https://www.seis.sc.edu/downloads/TauP/prerelease/TauP-3.2.0-SNAPSHOT4.tgz
 
 2) Probably put the TauP/bin on your path, although you can override this
 
 3) Grab the latest taup_python package, here:
+
 https://www.seis.sc.edu/downloads/TauP/prerelease/taup-0.2.0a1-py3-none-any.whl
 
 4) create a conda environment, python>=3.11, install taup_python
+```
 conda create -n swat python=3.11
 conda activate swat
 pip install taup-0.2.0a1-py3-none-any.whl
+```
 
 5) checkout this repo, install it
+```
 git clone https://github.com/crotwell/scattererwhereartthou.git
 cd scattererwhereartthou
 pip install -v -e .
+```
 
 6) run the example tool
 ```
