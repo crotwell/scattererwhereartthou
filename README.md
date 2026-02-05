@@ -62,3 +62,87 @@ options:
   --slice SLICE         output as matplotlib polar slice
   --showslice           show matplotlib polar slice to screen
 ```
+
+# Example
+
+Say and earthquake is at (-1, -101) with depth 100 km and station at (34, -80). A possible scatterer is observed at 20 seconds after the P arrival with slowness 8.0 s/deg. This will show a map plot
+of all the scatterers that can satisfy these values:
+
+```
+swat --evt -1 -101 --sta 34 -80 --delay 5 --slow 8.0 --eventdepth 100 --showmap
+```
+
+To see a slice view, change `--showmap` to `--showslice`:
+
+
+```
+swat --evt -1 -101 --sta 34 -80 --delay 5 --slow 8.0 --eventdepth 100 --showslice
+```
+
+and to save the raw data (very verbose...) to a json file:
+
+```
+swat --evt -1 -101 --sta 34 -80 --delay 5 --slow 8.0 --eventdepth 100 --json scatter.json
+```
+
+The saved data looks like:
+```
+{
+  "taup": {
+    ...
+  },
+  "swat": [
+  ...
+  ]
+}
+```
+
+where the `taup` section is TauP's result for the reference phase, and `swat` contains the possible scatterers.
+
+Each item in the `swat` list looks like this, with the parameters used first, then a list of actual possible scatterers:
+```
+{
+      "eventdepth": 100.0,
+      "evtstadeg": 40.173355,
+      "toscatphase": "P,p,Ped",
+      "fromscatphase": "P,p,Ped",
+      "model": "prem",
+      "evtlat": -1.0,
+      "evtlon": -101.0,
+      "stalat": 34.0,
+      "stalon": -80.0,
+      "rayparamdeg": 8.0,
+      "traveltime": 450.98907,
+      "mindepth": 50,
+      "scatterers": [
+        ...
+        ]
+```
+
+The individual scatter points look like this, with
+`scata` and `scatb` being the two off axis points:
+
+```
+{
+          "scata": {
+            "distdeg": 0.31043157,
+            "depth": 55.00561,
+            "time": 9.097412,
+            "lat": 34.296383305372395,
+            "lon": -79.88843545901085
+          },
+          "scata_az": 17.27160231877208,
+          "scatb": {
+            "distdeg": 0.31043157,
+            "depth": 55.00561,
+            "time": 9.097412,
+            "lat": 34.198332544362046,
+            "lon": -79.71160113092802
+          },
+          "scatb_az": -309.7900457686464,
+          "C": 163.53082404370923,
+          "es_baz": -146.25922172493713,
+          ...
+```
+
+All this is subject to change!
