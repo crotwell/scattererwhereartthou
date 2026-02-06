@@ -13,19 +13,19 @@ and can do normal download and install activities.
 1) Install version 3.2.0-snapshot4 or greater of the TauP Toolkit.
 This is available here:
 
-https://www.seis.sc.edu/downloads/TauP/prerelease/TauP-3.2.0-SNAPSHOT4.tgz
+https://www.seis.sc.edu/downloads/TauP/prerelease/TauP-3.2.0-SNAPSHOT5.tgz
 
 2) Probably put the TauP/bin on your path, although you can override this
 
 3) Grab the latest taup_python package, here:
 
-https://www.seis.sc.edu/downloads/TauP/prerelease/taup-0.2.0a1-py3-none-any.whl
+https://www.seis.sc.edu/downloads/TauP/prerelease/taup-0.2.0a3-py3-none-any.whl
 
 4) create a conda environment, python>=3.11, install taup_python
 ```
-conda create -n swat python=3.11
+conda create -n swat python=3.13
 conda activate swat
-pip install taup-0.2.0a1-py3-none-any.whl
+pip install taup-0.2.0a3-py3-none-any.whl
 ```
 
 5) checkout this repo, install it
@@ -37,7 +37,7 @@ pip install -v -e .
 
 6) run the example tool
 ```
-swat --evt -1 -101 --sta 34 -80 --delay 5 --map swat.png  --slow 8.0 --mindepth 500 --showmap
+swat --evt -1 -101 --sta 34 -80 --delay 5 --slow 8.0 --bazoffset 5 1
 ```
 
 There are more options:
