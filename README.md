@@ -107,8 +107,9 @@ The saved data looks like:
 
 where the `taup` section is TauP's result for the reference phase, and `swat` contains the possible scatterers.
 
-Each item in the `swat` list looks like this, with the parameters used first, then a list of actual possible scatterers. Backrays is the result of taup path with the
-given ray parameter leaving the station.
+Each item in the `swat` list looks like this, with the parameters used first, then a list of actual possible scatterers. `backrays` is the result of taup path with the
+given ray parameter leaving the station, shooting the observed ray parameter
+backwards from the station.
 
 ```
 "swat": [
