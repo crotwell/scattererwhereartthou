@@ -107,11 +107,16 @@ The saved data looks like:
 
 where the `taup` section is TauP's result for the reference phase, and `swat` contains the possible scatterers.
 
-Each item in the `swat` list looks like this, with the parameters used first, then a list of actual possible scatterers:
+Each item in the `swat` list looks like this, with the parameters used first, then a list of actual possible scatterers. Backrays is the result of taup path with the
+given ray parameter leaving the station.
+
 ```
-{
+"swat": [
+    {
       "eventdepth": 100.0,
-      "evtstadeg": 40.173355,
+      "esdistdeg": 40.17335524279465,
+      "esaz": 27.42246100424842,
+      "esbaz": -146.25922172493713,
       "toscatphase": "P,p,Ped",
       "fromscatphase": "P,p,Ped",
       "model": "prem",
@@ -121,36 +126,54 @@ Each item in the `swat` list looks like this, with the parameters used first, th
       "stalon": -80.0,
       "rayparamdeg": 8.0,
       "traveltime": 450.98907,
-      "mindepth": 50,
+      "mindepth": 600.0,
       "scatterers": [
         ...
-        ]
+        ],
+      "backrays": {
+        ...
+      }
 ```
 
 The individual scatter points look like this, with
-`scata` and `scatb` being the two off axis points:
+`scat` the scattering point and `scat_baz` the back azimuth from the station
+to the scatterer. `baz_offset` is the shift in back azimuth needed
+to satisfy the arrival time projecting back to the earthquake from the
+scatterer. `scat_evt` is the travel time information from the scatterer
+back to the event.
 
 ```
 {
-          "scata": {
-            "distdeg": 0.31043157,
-            "depth": 55.00561,
-            "time": 9.097412,
-            "lat": 34.296383305372395,
-            "lon": -79.88843545901085
+          "scat": {
+            "distdeg": 5.1766777,
+            "depth": 600.0,
+            "time": 93.68801,
+            "lat": 31.31577117505093,
+            "lon": -85.25918119945892
           },
-          "scata_az": 17.27160231877208,
-          "scatb": {
-            "distdeg": 0.31043157,
-            "depth": 55.00561,
-            "time": 9.097412,
-            "lat": 34.198332544362046,
-            "lon": -79.71160113092802
-          },
-          "scatb_az": -309.7900457686464,
-          "C": 163.53082404370923,
-          "es_baz": -146.25922172493713,
-          ...
+          "scat_baz": -119.78523118292273,
+          "baz_offset": 26.47399054201441,
+          "scat_evt": {
+            "sourcedepth": 600.0,
+            "receiverdepth": 100.0,
+            "distdeg": 35.60188,
+            "phase": "P",
+            "time": 357.30106,
+            "rayparam": 8.185079,
+            "takeoff": 55.63494,
+            "incident": 37.09249,
+            "puristdist": 35.60188,
+            "puristname": "P",
+            "desc": null,
+            "amp": null,
+            "scatter": null,
+            "relative": null,
+            "derivative": null,
+            "pierce": [],
+            "pathlength": null,
+            "pathSegments": []
+          }
+        }
 ```
 
 All this is subject to change!

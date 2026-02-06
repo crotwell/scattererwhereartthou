@@ -1,31 +1,43 @@
 
 import dataclasses
 import taup
-from .spherical import calcBackAz
+from .spherical import findTrianglePoints, distaz_deg
 
 class SWAT:
-    def __init__(self, taupserver, eventdepth, evtstadeg,
+    def __init__(self, taupserver, eventdepth,
                  toscatphase="P", fromscatphase="P", model="prem"):
         self.taupserver = taupserver
         self.eventdepth = eventdepth
-        self.evtstadeg = evtstadeg
         self.toscatphase = toscatphase
         self.fromscatphase = fromscatphase
         self.model = model
-        self.evtlat = None
-        self.evtlon =  None
-        self.stalat = None
-        self.stalon = None
+        self.evtlat = 0
+        self.evtlon =  0
+        self.stalat = 0
+        self.stalon = 0
+        self.es_distdeg = 0
+        self.es_az = 0
+        self.es_baz = 0
         self._mindepth=50
     def minDepth(self, val):
         self._mindepth=val
     def event(self, evtlat, evtlon):
         self.evtlat = evtlat
         self.evtlon =  evtlon
+        self.es_distdeg, self.es_az, self.es_baz = distaz_deg(self.evtlat,
+                                                           self.evtlon,
+                                                           self.stalat,
+                                                           self.stalon)
     def station(self, stalat, stalon):
         self.stalat = stalat
         self.stalon = stalon
-    def scat_to_eq(self, timedist, traveltime, sta_scat_arrival):
+        self.es_distdeg, self.es_az, self.es_baz = distaz_deg(self.evtlat,
+                                                           self.evtlon,
+                                                           self.stalat,
+                                                           self.stalon)
+    def distaz(self):
+        return distaz_deg(evtlat, evtlon, stalat, stalon)
+    def scat_to_eq(self, timedist, traveltime, sta_scat_arrival, obsbaz=0, deltabaz=180):
         params = taup.TimeQuery()
         params.model(self.model)
         params.sourcedepth(timedist.depth) # scatterer depth
@@ -33,27 +45,50 @@ class SWAT:
         params.seconds(traveltime-timedist.time)
         params.phase(self.toscatphase)
         result = params.calc(self.taupserver)
+        minbaz = obsbaz-deltabaz
         scatterers = []
         for a in result.arrivals:
-            if a.distdeg + timedist.distdeg > self.evtstadeg:
-                calcBackAzAns  = calcBackAz(self.evtlat, self.evtlon, self.stalat, self.stalon, timedist.distdeg, a.distdeg)
-                if calcBackAzAns is None:
+            if a.distdeg + timedist.distdeg > self.es_distdeg:
+                triangleAns  = findTrianglePoints(self.evtlat, self.evtlon, self.stalat, self.stalon, timedist.distdeg, a.distdeg)
+                if triangleAns is None:
                     continue
-                pta, ptb, C, es_baz  = calcBackAzAns
+                pta, ptb, baz_offset, es_baz  = triangleAns
+                pta_baz = pta[2]
+                ptb_baz = ptb[2]
                 tda = dataclasses.replace(timedist, lat=pta[0], lon=pta[1])
                 tdb = dataclasses.replace(timedist, lat=ptb[0], lon=ptb[1])
-                scatterers.append({
-                    "scata": tda,
-                    "scata_az": pta[2],
-                    "scatb": tdb,
-                    "scatb_az": ptb[2],
-                    "C": C,
-                    "es_baz": es_baz,
-                    "scat_evt": a,
-                    "sta_scat": sta_scat_arrival})
+                if deltabaz >= 180 or (pta_baz-minbaz) % 360 <= 2*deltabaz:
+                    scatterers.append({
+                        "scat": tda,
+                        "scat_baz": pta[2],
+                        "baz_offset": baz_offset,
+                        "scat_evt": a})
+                if deltabaz >= 180 or (ptb_baz-minbaz) % 360 <= 2*deltabaz:
+                    scatterers.append({
+                        "scat": tdb,
+                        "scat_baz": ptb[2],
+                        "baz_offset": baz_offset,
+                        "scat_evt": a})
         return scatterers
 
-    def check_path_points(self, sta_scat_arrival, traveltime):
+    def check_path_points(self, sta_scat_arrival, traveltime, obsbaz=None, deltabaz=180):
+        """
+        Check each path point from the given arrival, to see if it is a
+        potential scattering point. The arrival should have been generated with
+        path points, via a taup path query, and should be oriented as an
+        inverse ray starting at the stations. Generally this is from a known
+        ray parameter, and goes to the major discontinuity above or below. For
+        example, when looking for a P wave scatterer in the mantle, the arrival
+        would be generated as either a P ray from the station turning back
+        to the surface, or as a Ped ray from the station that hits the core
+        mantle boundary, as the given ray parameter may be too small to turn
+        in the mantle.
+
+        If an observed back azimuth and deltabaz are given, potential
+        scatterers outside of this azimuthal range are eliminated.
+
+        Returns a list of potential scatterers.
+        """
         scat = []
         for seg in sta_scat_arrival.pathSegments:
             for td in seg.segment:
@@ -62,12 +97,13 @@ class SWAT:
                 if td.depth < self._mindepth:
                     continue
                 #print(f"path: deg: {td.distdeg} depth: {td.depth}  time: {td.time}")
-                scat = scat + self.scat_to_eq(td, traveltime, sta_scat_arrival)
+                scatList = self.scat_to_eq(td, traveltime, sta_scat_arrival, obsbaz=obsbaz, deltabaz=deltabaz)
+                scat = scat + scatList
 
         print(sta_scat_arrival)
         return scat
 
-    def find_via_path(self, rayparamdeg, traveltime):
+    def find_via_path(self, rayparamdeg, traveltime, obsbaz=0, deltatime=0, deltabaz=180):
         params = taup.PathQuery()
         params.model(self.model)
         params.rayparamdeg(rayparamdeg)
@@ -82,7 +118,9 @@ class SWAT:
         scatterers = []
         out = {
             "eventdepth": self.eventdepth,
-            "evtstadeg": self.evtstadeg,
+            "esdistdeg": self.es_distdeg,
+            "esaz": self.es_az,
+            "esbaz": self.es_baz,
             "toscatphase": self.toscatphase,
             "fromscatphase": self.fromscatphase,
             "model": self.model,
@@ -93,10 +131,11 @@ class SWAT:
             "rayparamdeg": rayparamdeg,
             "traveltime": traveltime,
             "mindepth": self._mindepth,
-            "scatterers": scatterers
+            "scatterers": scatterers,
+            "backrays": result,
         }
         for a in result.arrivals:
-            spp = self.check_path_points(a, traveltime)
+            spp = self.check_path_points(a, traveltime, obsbaz=obsbaz, deltabaz=deltabaz)
             scatterers = scatterers + spp
         out["scatterers"] = scatterers
         return out

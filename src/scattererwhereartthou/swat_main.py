@@ -37,7 +37,7 @@ def runswat(args):
             for a in result.arrivals[:1]:
                 if args.verbose:
                     print(f"Arrival: {a}")
-                swat = SWAT(taupserver, args.eventdepth, a.distdeg,
+                swat = SWAT(taupserver, args.eventdepth,
                             toscatphase, fromscatphase, model=args.model)
                 if args.mindepth is not None:
                     swat.minDepth(args.mindepth)

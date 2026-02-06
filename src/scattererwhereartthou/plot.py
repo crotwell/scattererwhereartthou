@@ -36,8 +36,7 @@ def mapplot(mydata, outfilename="swat_map.png", show=True):
     plt.scatter(firstData["evtlon"], firstData["evtlat"], marker='*', s=20, color='blue')
 
     for s in firstData["scatterers"]:
-        plt.scatter(s["scata"].lon, s["scata"].lat, marker='.', color='tomato')
-        plt.scatter(s["scatb"].lon, s["scatb"].lat, marker='.', color='tomato')
+        plt.scatter(s["scat"].lon, s["scat"].lat, marker='.', color='tomato')
     plt.savefig(outfilename, dpi=700, bbox_inches='tight', pad_inches=0.1)
     if show:
         print("Show map")
@@ -60,11 +59,10 @@ def sliceplot(mydata, outfilename="swat_slice.png", show=True, rofe=6371):
     plt.title(f'Scatter:{firstData["traveltime"]} rayp:{firstData["rayparamdeg"]} phase:{firstData["toscatphase"]} - {firstData["fromscatphase"]}')
 
     plt.scatter(0, 0, marker='v', s=20, color='blue')
-    plt.scatter(math.radians(firstData["evtstadeg"]), firstData["eventdepth"], marker='*', s=20, color='blue')
+    plt.scatter(math.radians(firstData["esdistdeg"]), firstData["eventdepth"], marker='*', s=20, color='blue')
 
     for s in firstData["scatterers"]:
-        plt.scatter(math.radians(s["scata"].distdeg), rofe-s["scata"].depth, marker='.', color='tomato')
-        plt.scatter(math.radians(s["scatb"].distdeg), rofe-s["scatb"].depth, marker='.', color='tomato')
+        plt.scatter(math.radians(s["scat"].distdeg), rofe-s["scat"].depth, marker='.', color='tomato')
     plt.savefig(outfilename, dpi=700, bbox_inches='tight', pad_inches=0.1)
     if show:
         print("Show map")

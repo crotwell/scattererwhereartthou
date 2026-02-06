@@ -3,7 +3,7 @@ import math
 DtoR=math.pi/180.0
 RtoD=1/DtoR
 
-def calcBackAz(evtlat, evtlon, stalat, stalon, staToScatDist, evtToScatDist):
+def findTrianglePoints(evtlat, evtlon, stalat, stalon, staToScatDist, evtToScatDist):
     """
     calculates 2 points that satisfy triangle
     returns (lat, lon, baz), (lat, lon, baz), C
