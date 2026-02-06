@@ -43,7 +43,12 @@ def runswat(args):
                     swat.minDepth(args.mindepth)
                 swat.event(evtlat, evtlon)
                 swat.station(stalat, stalon)
-                ans = swat.find_via_path(args.slow, a.time+args.delay)
+                obs_baz_offset = args.bazoffset[0]
+                obs_baz_delta = args.bazoffset[1]
+                ans = swat.find_via_path(args.slow,
+                                         a.time+args.delay,
+                                         bazoffset=obs_baz_offset,
+                                         bazdelta=obs_baz_delta)
                 swatList.append(ans)
         if args.json is not None:
             with open(args.json, "w") as outjson:
@@ -73,19 +78,20 @@ def do_parseargs():
     )
     parser.add_argument(
         "--eventdepth",
-        help="event depth.",
+        help="event depth in km.",
         type=float,
-        default=0
+        default=0,
+        metavar='d',
     )
     parser.add_argument(
         "--evt",
         help="event latitude and longitude.",
-        type=float, nargs=2, required=True
+        type=float, nargs=2, required=True, metavar=('lat', 'lon')
     )
     parser.add_argument(
         "--sta",
         help="station latitude and longitude.",
-        type=float, nargs=2, required=True
+        type=float, nargs=2, required=True, metavar=('lat', 'lon')
     )
     parser.add_argument(
         "-p","--phase", help="reference phase.",
@@ -94,22 +100,29 @@ def do_parseargs():
     parser.add_argument(
         "--delay",
         help="time delay of arrival relative to reference phase.",
-        type=float, required=True
+        type=float, required=True, metavar="s"
+    )
+    parser.add_argument(
+        "--bazoffset",
+        help="observed back azimuth offset of the scatterer relative to the reference phase and plus minus range.",
+        type=float,
+        nargs=2,
+        default=[0, 180], metavar=('offset', 'delta')
     )
     parser.add_argument(
         "--slow",
         help="observed slowness of suspected scatterer (s/deg)",
-        type=float, required=True
+        type=float, required=True, metavar='p'
     )
     parser.add_argument(
         "--mindepth",
         help="minimum depth of suspected scatterer (km)",
-        type=float, default=50
+        type=float, default=50, metavar='d'
     )
     parser.add_argument(
         "--model",
         help="earth model, as used by TauP.",
-        default="prem"
+        default="prem", metavar='name'
     )
     parser.add_argument(
         "--taup",
@@ -119,12 +132,12 @@ def do_parseargs():
     parser.add_argument(
         "--json",
         help="output to json file",
-        type=pathlib.Path
+        type=pathlib.Path, metavar="name.json"
     )
     parser.add_argument(
         "--map",
         help="output as matplotlib map",
-        type=pathlib.Path
+        type=pathlib.Path, metavar="map.png"
     )
     parser.add_argument(
         "--showmap",
@@ -134,7 +147,7 @@ def do_parseargs():
     parser.add_argument(
         "--slice",
         help="output as matplotlib polar slice",
-        type=pathlib.Path
+        type=pathlib.Path, metavar="slice.png"
     )
     parser.add_argument(
         "--showslice",

@@ -37,7 +37,7 @@ class SWAT:
                                                            self.stalon)
     def distaz(self):
         return distaz_deg(evtlat, evtlon, stalat, stalon)
-    def scat_to_eq(self, timedist, traveltime, sta_scat_arrival, obsbaz=0, deltabaz=180):
+    def scat_to_eq(self, timedist, traveltime, sta_scat_arrival, bazoffset=0, bazdelta=180):
         params = taup.TimeQuery()
         params.model(self.model)
         params.sourcedepth(timedist.depth) # scatterer depth
@@ -45,7 +45,7 @@ class SWAT:
         params.seconds(traveltime-timedist.time)
         params.phase(self.toscatphase)
         result = params.calc(self.taupserver)
-        minbaz = obsbaz-deltabaz
+        minbaz = self.es_baz-bazoffset-bazdelta
         scatterers = []
         for a in result.arrivals:
             if a.distdeg + timedist.distdeg > self.es_distdeg:
@@ -57,13 +57,13 @@ class SWAT:
                 ptb_baz = ptb[2]
                 tda = dataclasses.replace(timedist, lat=pta[0], lon=pta[1])
                 tdb = dataclasses.replace(timedist, lat=ptb[0], lon=ptb[1])
-                if deltabaz >= 180 or (pta_baz-minbaz) % 360 <= 2*deltabaz:
+                if bazdelta >= 180 or (pta_baz-minbaz) % 360 <= 2*bazdelta:
                     scatterers.append({
                         "scat": tda,
                         "scat_baz": pta[2],
                         "baz_offset": baz_offset,
                         "scat_evt": a})
-                if deltabaz >= 180 or (ptb_baz-minbaz) % 360 <= 2*deltabaz:
+                if bazdelta >= 180 or (ptb_baz-minbaz) % 360 <= 2*bazdelta:
                     scatterers.append({
                         "scat": tdb,
                         "scat_baz": ptb[2],
@@ -71,7 +71,7 @@ class SWAT:
                         "scat_evt": a})
         return scatterers
 
-    def check_path_points(self, sta_scat_arrival, traveltime, obsbaz=None, deltabaz=180):
+    def check_path_points(self, sta_scat_arrival, traveltime, bazoffset=0, bazdelta=180):
         """
         Check each path point from the given arrival, to see if it is a
         potential scattering point. The arrival should have been generated with
@@ -97,13 +97,17 @@ class SWAT:
                 if td.depth < self._mindepth:
                     continue
                 #print(f"path: deg: {td.distdeg} depth: {td.depth}  time: {td.time}")
-                scatList = self.scat_to_eq(td, traveltime, sta_scat_arrival, obsbaz=obsbaz, deltabaz=deltabaz)
+                scatList = self.scat_to_eq(td,
+                                           traveltime,
+                                           sta_scat_arrival,
+                                           bazoffset=bazoffset,
+                                           bazdelta=bazdelta)
                 scat = scat + scatList
 
         print(sta_scat_arrival)
         return scat
 
-    def find_via_path(self, rayparamdeg, traveltime, obsbaz=0, deltatime=0, deltabaz=180):
+    def find_via_path(self, rayparamdeg, traveltime, bazoffset=0, deltatime=0, bazdelta=180):
         params = taup.PathQuery()
         params.model(self.model)
         params.rayparamdeg(rayparamdeg)
@@ -121,6 +125,8 @@ class SWAT:
             "esdistdeg": self.es_distdeg,
             "esaz": self.es_az,
             "esbaz": self.es_baz,
+            "bazoffset": bazoffset,
+            "bazdelta": bazdelta,
             "toscatphase": self.toscatphase,
             "fromscatphase": self.fromscatphase,
             "model": self.model,
@@ -135,7 +141,7 @@ class SWAT:
             "backrays": result,
         }
         for a in result.arrivals:
-            spp = self.check_path_points(a, traveltime, obsbaz=obsbaz, deltabaz=deltabaz)
+            spp = self.check_path_points(a, traveltime, bazoffset=bazoffset, bazdelta=bazdelta)
             scatterers = scatterers + spp
         out["scatterers"] = scatterers
         return out

@@ -93,6 +93,12 @@ and to save the raw data (very verbose...) to a json file:
 swat --evt -1 -101 --sta 34 -80 --delay 5 --slow 8.0 --eventdepth 100 --json scatter.json
 ```
 
+The optional `--bazoffset <value> <delta>` argument will limit
+scatterers with back azimuth to be the given value relative to the
+reference phase, plus or minus the delta. If the reference phase back
+azimuth (station to event) is 100, then `--bazoffset 5 2` will find
+scatterers between 103 and 107 degrees.
+
 The saved data looks like:
 ```
 {
