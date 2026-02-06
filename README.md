@@ -43,9 +43,9 @@ swat --evt -1 -101 --sta 34 -80 --delay 5 --map swat.png  --slow 8.0 --mindepth 
 There are more options:
 ```
 swat -h
-usage: swat [-h] [-v] [-c CONF] [--eventdepth EVENTDEPTH] --evt EVT EVT --sta STA STA [-p PHASE] --delay DELAY --slow SLOW
-            [--mindepth MINDEPTH] [--model MODEL] [--taup TAUP] [--json JSON] [--map MAP] [--showmap] [--slice SLICE]
-            [--showslice]
+usage: swat [-h] [-v] [-c CONF] [--eventdepth d] --evt lat lon --sta lat lon [-p PHASE] --delay s [--bazoffset offset delta]
+            --slow p [--mindepth d] [--model name] [--taup TAUP] [--json name.json] [--text name.txt] [--map map.png] [--showmap]
+            [--slice slice.png] [--showslice]
 
 Find possible scatterers. Version=0.0.1
 
@@ -53,21 +53,23 @@ options:
   -h, --help            show this help message and exit
   -v, --verbose         increase output verbosity
   -c CONF, --conf CONF  Configuration as TOML
-  --eventdepth EVENTDEPTH
-                        event depth.
-  --evt EVT EVT         event latitude and longitude.
-  --sta STA STA         station latitude and longitude.
+  --eventdepth d        event depth in km.
+  --evt lat lon         event latitude and longitude.
+  --sta lat lon         station latitude and longitude.
   -p PHASE, --phase PHASE
                         reference phase.
-  --delay DELAY         time delay of arrival relative to reference phase.
-  --slow SLOW           observed slowness of suspected scatterer (s/deg)
-  --mindepth MINDEPTH   minimum depth of suspected scatterer (km)
-  --model MODEL         earth model, as used by TauP.
+  --delay s             time delay of arrival relative to reference phase.
+  --bazoffset offset delta
+                        observed back azimuth offset of the scatterer relative to the reference phase and plus minus range.
+  --slow p              observed slowness of suspected scatterer (s/deg)
+  --mindepth d          minimum depth of suspected scatterer (km)
+  --model name          earth model, as used by TauP.
   --taup TAUP           path to the TauP executable.
-  --json JSON           output to json file
-  --map MAP             output as matplotlib map
+  --json name.json      output to json file
+  --text name.txt       output points as text to a file
+  --map map.png         output as matplotlib map
   --showmap             show matplotlib map to screen
-  --slice SLICE         output as matplotlib polar slice
+  --slice slice.png     output as matplotlib polar slice
   --showslice           show matplotlib polar slice to screen
 ```
 
@@ -78,6 +80,12 @@ of all the scatterers that can satisfy these values:
 
 ```
 swat --evt -1 -101 --sta 34 -80 --delay 5 --slow 8.0 --eventdepth 100 --showmap
+```
+
+For a textual output of the scatterer points, limiting them to
+within +-1 deg of a -4 degree back azimuth offset:
+```
+swat --evt -1 -101 --sta 34 -80 --delay 5 --slow 8.0 --eventdepth 100 --bazoffset -4 1
 ```
 
 To see a slice view, change `--showmap` to `--showslice`:

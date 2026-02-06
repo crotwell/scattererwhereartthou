@@ -57,7 +57,19 @@ def runswat(args):
             mapplot(output, show=args.showmap)
         if args.slice is not None or args.showslice:
             sliceplot(output, show=args.showslice)
-
+        if args.text or not(args.json or args.map or args.slice or args.showmap or args.showslice ):
+            if args.text:
+                outf = open(args.text, "w")
+            else:
+                outf = sys.stdout
+            print(f" Lat   Lon   Depth Dist   Baz", file=outf)
+            for s in swatList:
+                for scat in s["scatterers"]:
+                    pt = scat["scat"]
+                    baz = scat["scat_baz"]
+                    print(f"{pt.lat:.2f} {pt.lon:.2f} {pt.depth:.1f} {pt.distdeg:.2f} {baz:.1f}", file=outf)
+            if args.text:
+                outf.close()
 
 
 
@@ -133,6 +145,11 @@ def do_parseargs():
         "--json",
         help="output to json file",
         type=pathlib.Path, metavar="name.json"
+    )
+    parser.add_argument(
+        "--text",
+        help="output points as text to a file",
+        type=pathlib.Path, metavar="name.txt"
     )
     parser.add_argument(
         "--map",
