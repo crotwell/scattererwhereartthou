@@ -54,15 +54,8 @@ def sliceplot(swatList, tauptimes=None, outfilename="swat_slice.png", show=True,
         print("noting to plot...")
         return
     firstData = swatList[0]
-    deepest = 0
-    for s in firstData.scatterers:
-        if s.scat.depth > deepest:
-            deepest = s.scat.depth
-    deepest = deepest * 1.10 # little bit more
     plt.figure()
     ax = plt.axes(projection='polar')
-    print(f"ax.set_rmax({rofe})")
-    print(f"ax.set_rmin({rofe}-{deepest})")
 
     plt.title(f'Scatter: rayp:{firstData.rayparamdeg} phase:{firstData.toscatphase} - {firstData.fromscatphase} {makeBazTitle(firstData)}')
 
@@ -76,12 +69,22 @@ def sliceplot(swatList, tauptimes=None, outfilename="swat_slice.png", show=True,
         for s in swatData.scatterers:
             plt.scatter(math.radians(s.scat.distdeg), rofe-s.scat.depth, marker='.', color='tomato')
 
+    deepest = 0
+    for swatData in swatList:
+        for s in firstData.scatterers:
+            if s.scat.depth > deepest:
+                deepest = s.scat.depth
+    deepest  *= 1.10 # little bit more
+    maxESDeg *= 1.05
+    print(f"ax.set_rmax({rofe})")
+    print(f"ax.set_rmin({rofe}-{deepest})")
+    print(f"ax.set_thetamax({maxESDeg})")
 
     ax.set_rmax(rofe)
     ax.set_rmin(rofe-deepest)
     ax.set_rorigin(0)
     ax.set_thetamin(0)
-    ax.set_thetamax(maxESDeg*1.05)
+    ax.set_thetamax(maxESDeg)
     gridlines=ax.grid(True, alpha=.80)
     plt.savefig(outfilename, dpi=700, bbox_inches='tight', pad_inches=0.1)
     if show:
