@@ -93,5 +93,5 @@ def sliceplot(swatList, tauptimes=None, outfilename="swat_slice.png", show=True,
 def makeBazTitle(swatData):
     bazTitle = ""
     if swatData.bazdelta < 180:
-        bazTitle = f"Baz: {swatData['bazoffset']}+-{swatData['bazdelta']}"
+        bazTitle = f"Baz: {swatData.bazoffset}+-{swatData.bazdelta}"
     return bazTitle
