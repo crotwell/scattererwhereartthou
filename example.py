@@ -5,7 +5,7 @@ from scattererwhereartthou import SWAT, mapplot, sliceplot
 
 #
 # roughly equivalent to
-# swat --evt 66 166 --eventdepth 0 --sta -11 120 --delay 15.0 --slow 4.0 --showmap --showslice
+# swat --evt 66 166 --eventdepth 200 --sta -11 120 --delay 20.0 --slow 6.0 --showmap --showslice
 
 # location of taup version 3 executable, not needed if already on PATH
 taup_path="../../../seis/TauP/build/install/TauP/bin/taup"
