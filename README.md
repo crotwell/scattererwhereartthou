@@ -52,7 +52,7 @@ There are more options:
 ```
 swat -h
 usage: swat [-h] [-v] [-c CONF] [--eventdepth d] --evt lat lon --sta lat lon [-p PHASE]
-            --delay s [s ...] [--bazoffset offset delta] --slow p [--mindepth d]
+            --delay s [s ...] [--bazoffset offset delta] --slow p [p ...] [--mindepth d]
             [--model name] [--taup TAUP] [--json name.json] [--text name.txt] [--map map.png]
             [--showmap] [--slice slice.png] [--showslice]
 
@@ -70,7 +70,7 @@ options:
   --bazoffset offset delta
                         observed back azimuth offset of the scatterer relative to the
                         reference phase and plus minus range.
-  --slow p              observed slowness of suspected scatterer (s/deg)
+  --slow p [p ...]      observed slowness of suspected scatterer (s/deg)
   --mindepth d          minimum depth of suspected scatterer (km)
   --model name          earth model, as used by TauP.
   --taup TAUP           path to the TauP executable.
@@ -80,6 +80,7 @@ options:
   --showmap             show matplotlib map to screen
   --slice slice.png     output as matplotlib polar slice
   --showslice           show matplotlib polar slice to screen
+
 ```
 
 # Example
@@ -150,7 +151,11 @@ backwards from the station.
       "evtdepth": 100.0,
       "stalat": 34.0,
       "stalon": -80.0,
-      "rayparamdeg": 8.0,
+      "rayparamdegs": [
+        7.9,
+        8.0,
+        8.1
+      ],
       "traveltimes": [
         450.48907,
         450.98907,
@@ -170,30 +175,36 @@ to the scatterer. `scat_evt` is the travel time information from the scatterer
 back to the event.
 
 ```
-        {
-          "scat": {
-            "distdeg": 30.825005,
-            "depth": 956.8327,
-            "time": 316.3759,
-            "lat": 8.540021369168644,
-            "lon": -98.88872405000471
-          },
-          "scat_baz": -141.33489037838027,
-          "sta_scat_phase": "P",
-          "evt_scat": {
-            "sourcedepth": 100.0,
-            "receiverdepth": 956.8327,
-            "distdeg": 9.769331,
-            "phase": "Ped",
-            "time": 134.11317,
-            "rayparam": 7.4547715,
-            "takeoff": 33.31846,
-            "incident": 116.01546,
-            "puristdist": 9.769331,
-            "puristname": "Ped",
-
-          }
-        },
+    "scat": {
+       "distdeg": 32.0439,
+       "depth": 861.4825,
+       "time": 328.67746,
+       "lat": 7.510013299538035,
+       "lon": -99.54715097290995
+     },
+     "scat_baz": -141.30302352362247,
+     "sta_scat_phase": "P",
+     "evt_scat": {
+       "sourcedepth": 100.0,
+       "receiverdepth": 861.4825,
+       "distdeg": 8.632519,
+       "phase": "Ped",
+       "time": 121.81161,
+       "rayparam": 7.716091,
+       "takeoff": 34.64896,
+       "incident": 115.716324,
+       "puristdist": 8.632519,
+       "puristname": "Ped",
+       "desc": null,
+       "amp": null,
+       "scatter": null,
+       "relative": null,
+       "derivative": null,
+       "pierce": [],
+       "pathlength": null,
+       "pathSegments": []
+     }
+    },
 ```
 
 Several

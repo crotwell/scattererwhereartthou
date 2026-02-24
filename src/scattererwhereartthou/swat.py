@@ -140,12 +140,14 @@ class SWAT:
 
         return scat
 
-    def find_via_path(self, rayparamdeg, traveltimes, bazoffset=0, deltatime=0, bazdelta=180):
+    def find_via_path(self, rayparamdegs, traveltimes, bazoffset=0, deltatime=0, bazdelta=180):
+        if isinstance(rayparamdegs, float):
+            rayparamdegs = [rayparamdegs]
         if isinstance(traveltimes, float):
             traveltimes = [traveltimes]
         params = taup.PathQuery()
         params.model(self.model)
-        params.rayparamdeg(rayparamdeg)
+        params.rayparamdeg(rayparamdegs)
         params.phase(self.sta_scat_revphase)
         params.receiverdepth(self.backproject_depths)
         # actually station, shoot ray back to scatterer
@@ -172,7 +174,7 @@ class SWAT:
             evtdepth = self.evtdepth,
             stalat = self.stalat,
             stalon = self.stalon,
-            rayparamdeg = rayparamdeg,
+            rayparamdegs = rayparamdegs,
             traveltimes = traveltimes,
             mindepth = self._mindepth,
             scatterers = scatterers

@@ -126,7 +126,8 @@ def do_parseargs():
     parser.add_argument(
         "--slow",
         help="observed slowness of suspected scatterer (s/deg)",
-        type=float, required=True, metavar='p'
+        type=float, nargs='+',
+        required=True, metavar='p'
     )
     parser.add_argument(
         "--mindepth",

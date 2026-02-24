@@ -26,7 +26,7 @@ class SwatResult:
     evtdepth: float
     stalat: float
     stalon: float
-    rayparamdeg: float
+    rayparamdegs: list[float]
     traveltimes: list[float]
     mindepth: float
     scatterers: list[Scatterer]
