@@ -28,9 +28,6 @@ def runswat(args):
             "swat": swatList
         }
 
-        evt_scat_phase = "P,p,Ped"
-        sta_scat_revphase = "P,p,Ped"
-
         if len(timeResult.arrivals) == 0:
             print(f"No arrivals for {ref_phase} for {evtlat},{evtlon} ({eventdepth} km) to {stalat},{stalon}")
         else:
@@ -38,7 +35,9 @@ def runswat(args):
                 if args.verbose:
                     print(f"Arrival: {a}")
                 swat = SWAT(taupserver, args.eventdepth,
-                            evt_scat_phase, sta_scat_revphase, model=args.model)
+                            evt_scat_phase=args.evtscatphase,
+                            sta_scat_revphase=args.stascatphase,
+                            model=args.model)
                 if args.mindepth is not None:
                     swat.minDepth(args.mindepth)
                 swat.event(evtlat, evtlon)
@@ -138,6 +137,16 @@ def do_parseargs():
         "--model",
         help="earth model, as used by TauP.",
         default="prem", metavar='name'
+    )
+    parser.add_argument(
+        "--stascatphase",
+        help="list of reversed phases from the station to the scatterer.",
+        default="p,P,Ped", metavar='phase'
+    )
+    parser.add_argument(
+        "--evtscatphase",
+        help="list of phases from the earthquake to the scatterer.",
+        default="p,P,Ped", metavar='phase'
     )
     parser.add_argument(
         "--taup",
