@@ -19,7 +19,12 @@ sta=(-11, 120)  # station lat, lon
 phase="P"   # reference phase
 max_dist_step=1.0 # max separation between path scatterers in degrees, default is 2 deg
 
-slowrange=(4.5, 4.6, 0.1)  # min, max, step
+
+# observed slownesses at station, usually p_minus, p, p_plus
+# but can be more values for denser search results
+# Note that the scatterer locations are quite sensitive to slowness, and so
+# a denser gridsearch over slowness may be needed if the min-max range is large
+slownesses = [5.75+.05*p for p in range(-5, 6)]
 # delay times relative to reference phase arrival, usually t_minus, t, t_plus
 # but can be more values for denser search results
 delaytimes=[5, 5.25, 5.5]
@@ -28,9 +33,11 @@ bazdelta=0.5
 
 with open("swat.csv", "w", newline='') as outcsv:
     csvwriter = csv.writer(outcsv)
-    csvwriter.writerow(["scatlat", "scatlon", "scatdepth", "scatbaz",
+    csvwriter.writerow(["scatlat", "scatlon", "scatdepth",
+                        "scatdistdeg", "scatbaz", "sta_scat_p", "sta_scat_time",
                         "evtlat", "evtlon", "evtdepth",
-                        "stalat", "stalon"])
+                        "stalat", "stalon"
+                        ])
     with taup.TauPServer( taup_path=taup_path) as taupserver:
         print("starting...")
         # reference phase
@@ -41,23 +48,26 @@ with open("swat.csv", "w", newline='') as outcsv:
         params.station(*sta)
         params.phase(phase)
         timeResult = params.calc(taupserver)
+
         swatList = []
+        swat = SWAT(taupserver, eventdepth, model=model)
+        swat.event(*evt)
+        swat.station(*sta)
+        swat.dist_step = max_dist_step
+
         for a in timeResult.arrivals:
             print(f"Arrival: {a}")
-            swat = SWAT(taupserver, eventdepth, model=model)
-            swat.event(*evt)
-            swat.station(*sta)
-            swat.dist_step = max_dist_step
-            slow = slowrange[0]
-            while slow <= slowrange[1]:
-                traveltimes = [a.time+delay for delay in delaytimes]
-                print(f"slow: {slow}  delay: {delaytimes} traveltimes: {traveltimes}")
-                ans = swat.find_via_path(slow, traveltimes, bazoffset=bazoffset, bazdelta=bazdelta)
-                swatList.append(ans)
-                for sc in ans.scatterers:
-                    csvwriter.writerow([format(sc.scat.lat, "0.3f"), format(sc.scat.lon, "0.3f"),
-                                        format(sc.scat.depth, "0.3f"),
-                                        format(sc.scat_baz, "0.3f"),
-                                        ans.evtlat, ans.evtlon, ans.evtdepth,
-                                        ans.stalat, ans.stalon])
-                slow += slowrange[2]
+            traveltimes = [a.time+delay for delay in delaytimes]
+            print(f"slow: {slownesses}  delay: {delaytimes} traveltimes: {traveltimes}")
+            ans = swat.find_via_path(slownesses, traveltimes, bazoffset=bazoffset, bazdelta=bazdelta)
+            swatList.append(ans)
+            for sc in ans.scatterers:
+                csvwriter.writerow([format(sc.scat.lat, "0.3f"), format(sc.scat.lon, "0.3f"),
+                                    format(sc.scat.depth, "0.3f"),
+                                    format(sc.scat.distdeg, "0.2f"),
+                                    format(sc.scat_baz, "0.3f"),
+                                    format(sc.sta_scat_rayparam, "0.2f"),
+                                    format(sc.scat.time, "0.2f"),
+                                    ans.evtlat, ans.evtlon, ans.evtdepth,
+                                    ans.stalat, ans.stalon
+                                    ])
