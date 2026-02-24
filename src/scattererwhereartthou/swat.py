@@ -138,7 +138,6 @@ class SWAT:
                                        bazdelta=bazdelta)
                 prevTD = td
 
-        print(sta_scat_arrival)
         return scat
 
     def find_via_path(self, rayparamdeg, traveltime, bazoffset=0, deltatime=0, bazdelta=180):
