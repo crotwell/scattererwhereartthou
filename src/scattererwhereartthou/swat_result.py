@@ -7,7 +7,7 @@ class Scatterer:
     scat: TimeDist
     scat_baz: float
     sta_scat_phase: str
-    scat_evt: Arrival
+    evt_scat: Arrival
 
 @dataclass
 class SwatResult:

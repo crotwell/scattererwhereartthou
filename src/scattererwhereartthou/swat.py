@@ -86,13 +86,13 @@ class SWAT:
                         scat = tda,
                         scat_baz = pta_baz,
                         sta_scat_phase=sta_scat_arrival.phase,
-                        scat_evt = a))
+                        evt_scat = a))
                 if bazdelta >= 180 or (ptb_baz-minbaz) % 360 <= 2*bazdelta:
                     scatterers.append(Scatterer(
                         scat = tdb,
                         scat_baz = ptb_baz,
                         sta_scat_phase=sta_scat_arrival.phase,
-                        scat_evt = a))
+                        evt_scat = a))
         return scatterers
 
     def check_path_points(self, sta_scat_arrival, traveltime, bazoffset=0, bazdelta=180):
