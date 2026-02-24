@@ -20,7 +20,9 @@ phase="P"   # reference phase
 max_dist_step=1.0 # max separation between path scatterers in degrees, default is 2 deg
 
 slowrange=(4.5, 4.6, 0.1)  # min, max, step
-delayrange=(5, 5.5, 0.25)     # min, max, step
+# delay times relative to reference phase arrival, usually t_minus, t, t_plus
+# but can be more values for denser search results
+delaytimes=[5, 5.25, 5.5]
 bazoffset=3
 bazdelta=0.5
 
@@ -48,16 +50,14 @@ with open("swat.csv", "w", newline='') as outcsv:
             swat.dist_step = max_dist_step
             slow = slowrange[0]
             while slow <= slowrange[1]:
-                delay = delayrange[0]
-                while delay <= delayrange[1]:
-                    print(f"slow: {slow}  delay: {delay}")
-                    ans = swat.find_via_path(slow, a.time+delay, bazoffset=bazoffset, bazdelta=bazdelta)
-                    swatList.append(ans)
-                    for sc in ans.scatterers:
-                        csvwriter.writerow([format(sc.scat.lat, "0.3f"), format(sc.scat.lon, "0.3f"),
-                                            format(sc.scat.depth, "0.3f"),
-                                            format(sc.scat_baz, "0.3f"),
-                                            ans.evtlat, ans.evtlon, ans.evtdepth,
-                                            ans.stalat, ans.stalon])
-                    delay += delayrange[2]
+                traveltimes = [a.time+delay for delay in delaytimes]
+                print(f"slow: {slow}  delay: {delaytimes} traveltimes: {traveltimes}")
+                ans = swat.find_via_path(slow, traveltimes, bazoffset=bazoffset, bazdelta=bazdelta)
+                swatList.append(ans)
+                for sc in ans.scatterers:
+                    csvwriter.writerow([format(sc.scat.lat, "0.3f"), format(sc.scat.lon, "0.3f"),
+                                        format(sc.scat.depth, "0.3f"),
+                                        format(sc.scat_baz, "0.3f"),
+                                        ans.evtlat, ans.evtlon, ans.evtdepth,
+                                        ans.stalat, ans.stalon])
                 slow += slowrange[2]

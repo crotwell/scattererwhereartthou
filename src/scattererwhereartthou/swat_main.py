@@ -45,8 +45,9 @@ def runswat(args):
                 swat.station(stalat, stalon)
                 obs_baz_offset = args.bazoffset[0]
                 obs_baz_delta = args.bazoffset[1]
+                traveltimes = [a.time+delay for delay in args.delay]
                 ans = swat.find_via_path(args.slow,
-                                         a.time+args.delay,
+                                         traveltimes,
                                          bazoffset=obs_baz_offset,
                                          bazdelta=obs_baz_delta)
                 swatList.append(ans)
@@ -111,7 +112,8 @@ def do_parseargs():
     )
     parser.add_argument(
         "--delay",
-        help="time delay of arrival relative to reference phase.",
+        help="time delays of arrival relative to reference phase.",
+        nargs='+',
         type=float, required=True, metavar="s"
     )
     parser.add_argument(

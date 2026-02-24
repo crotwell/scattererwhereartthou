@@ -14,10 +14,13 @@ sta=(-11, 120)  # station lat, lon
 phase="P"   # reference phase
 max_dist_step=1.0 # max separation between path scatterers in degrees, default is 2 deg
 
-slowrange=(4.5,4.8,0.2)  # min, max, step
-delayrange=(5,7,1.0)     # min, max, step
+slowrange=(4.5,4.5,0.2)  # min, max, step
+# delay times relative to reference phase arrival, usually t_minus, t, t_plus
+# but can be more values for denser search results
+delaytimes=[5, 5.25, 5.5]
+delaytimes=[5, 6, 7]
 bazoffset=3
-bazdelta=0.5
+bazdelta=10.5
 
 
 with taup.TauPServer( taup_path=taup_path) as taupserver:
@@ -38,12 +41,10 @@ with taup.TauPServer( taup_path=taup_path) as taupserver:
         swat.dist_step = max_dist_step
         slow = slowrange[0]
         while slow <= slowrange[1]:
-            delay = delayrange[0]
-            while delay <= delayrange[1]:
-                print(f"slow: {slow}  delay: {delay}")
-                ans = swat.find_via_path(slow, a.time+delay, bazoffset=bazoffset, bazdelta=bazdelta)
-                swatList.append(ans)
-                delay += delayrange[2]
+            traveltimes = [a.time+delay for delay in delaytimes]
+            print(f"slow: {slow}  delay: {delaytimes} traveltimes: {traveltimes}")
+            ans = swat.find_via_path(slow, traveltimes, bazoffset=bazoffset, bazdelta=bazdelta)
+            swatList.append(ans)
             slow += slowrange[2]
     mapplot(swatList, tauptimes=timeResult)
     sliceplot(swatList, tauptimes=timeResult)

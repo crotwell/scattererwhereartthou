@@ -45,19 +45,18 @@ pip install -v -e .
 
 6) run the example tool
 ```
-swat --evt -1 -101 --sta 34 -80 --delay 5 --slow 8.0 --bazoffset 5 1
+swat --evt -1 -101 --sta 34 -80 --delay 4.5 5 5.5 --slow 8.0 --bazoffset 5 1
 ```
 
 There are more options:
 ```
 swat -h
-usage: swat [-h] [-v] [-c CONF] [--eventdepth d] --evt lat lon --sta lat lon
-            [-p PHASE] --delay s [--bazoffset offset delta] --slow p
-            [--mindepth d] [--model name] [--taup TAUP] [--json name.json]
-            [--text name.txt] [--map map.png] [--showmap] [--slice slice.png]
-            [--showslice]
+usage: swat [-h] [-v] [-c CONF] [--eventdepth d] --evt lat lon --sta lat lon [-p PHASE]
+            --delay s [s ...] [--bazoffset offset delta] --slow p [--mindepth d]
+            [--model name] [--taup TAUP] [--json name.json] [--text name.txt] [--map map.png]
+            [--showmap] [--slice slice.png] [--showslice]
 
-Find possible scatterers. Version=0.0.1
+Find possible scatterers. Version=0.0.2
 
 options:
   -h, --help            show this help message and exit
@@ -67,10 +66,10 @@ options:
   --evt lat lon         event latitude and longitude.
   --sta lat lon         station latitude and longitude.
   -p, --phase PHASE     reference phase.
-  --delay s             time delay of arrival relative to reference phase.
+  --delay s [s ...]     time delays of arrival relative to reference phase.
   --bazoffset offset delta
-                        observed back azimuth offset of the scatterer relative
-                        to the reference phase and plus minus range.
+                        observed back azimuth offset of the scatterer relative to the
+                        reference phase and plus minus range.
   --slow p              observed slowness of suspected scatterer (s/deg)
   --mindepth d          minimum depth of suspected scatterer (km)
   --model name          earth model, as used by TauP.
@@ -85,30 +84,30 @@ options:
 
 # Example
 
-Say and earthquake is at (-1, -101) with depth 100 km and station at (34, -80). A possible scatterer is observed at 5 seconds after the P arrival with slowness 8.0 s/deg. This will show a map plot
+Say and earthquake is at (-1, -101) with depth 100 km and station at (34, -80). A possible scatterer is observed at 5.0+-0.5 seconds, after the P arrival with slowness 8.0 s/deg. This will show a map plot
 of all the scatterers that can satisfy these values:
 
 ```
-swat --evt -1 -101 --sta 34 -80 --delay 5 --slow 8.0 --eventdepth 100 --showmap
+swat --evt -1 -101 --sta 34 -80 --delay 4.5 5 5.5 --slow 8.0 --eventdepth 100 --showmap
 ```
 
 For a textual output of the scatterer points, limiting them to
 within +-1 deg of a -4 degree back azimuth offset:
 ```
-swat --evt -1 -101 --sta 34 -80 --delay 5 --slow 8.0 --eventdepth 100 --bazoffset -4 1
+swat --evt -1 -101 --sta 34 -80 --delay 4.5 5 5.5  --slow 8.0 --eventdepth 100 --bazoffset -4 1
 ```
 
 To see a slice view, change `--showmap` to `--showslice`:
 
 
 ```
-swat --evt -1 -101 --sta 34 -80 --delay 5 --slow 8.0 --eventdepth 100 --showslice
+swat --evt -1 -101 --sta 34 -80 --delay 4.5 5 5.5 --slow 8.0 --eventdepth 100 --showslice
 ```
 
 and to save the raw data (very verbose...) to a json file:
 
 ```
-swat --evt -1 -101 --sta 34 -80 --delay 5 --slow 8.0 --eventdepth 100 --json scatter.json
+swat --evt -1 -101 --sta 34 -80 --delay 4.5 5 5.5 --slow 8.0 --eventdepth 100 --json scatter.json
 ```
 
 The optional `--bazoffset <value> <delta>` argument will limit
@@ -136,22 +135,28 @@ given ray parameter leaving the station, shooting the observed ray parameter
 backwards from the station.
 
 ```
-"swat": [
+  "swat": [
     {
-      "eventdepth": 100.0,
       "esdistdeg": 40.17335524279465,
       "esaz": 27.42246100424842,
       "esbaz": -146.25922172493713,
-      "scat_eq_revphase": "P,p,Ped",
+      "bazoffset": -4.0,
+      "bazdelta": 1.0,
+      "eq_scat_phase": "P,p,Ped",
       "sta_scat_revphase": "P,p,Ped",
       "model": "prem",
       "evtlat": -1.0,
       "evtlon": -101.0,
+      "evtdepth": 100.0,
       "stalat": 34.0,
       "stalon": -80.0,
       "rayparamdeg": 8.0,
-      "traveltime": 450.98907,
-      "mindepth": 600.0,
+      "traveltimes": [
+        450.48907,
+        450.98907,
+        451.48907
+      ],
+      "mindepth": 50,
       "scatterers": [
         ...
         ]
@@ -167,32 +172,26 @@ back to the event.
 ```
         {
           "scat": {
-            "distdeg": 0.31043157,
-            "depth": 55.00561,
-            "time": 9.097412,
-            "lat": 34.296383305372395,
-            "lon": -79.88843545901085
+            "distdeg": 30.825005,
+            "depth": 956.8327,
+            "time": 316.3759,
+            "lat": 8.540021369168644,
+            "lon": -98.88872405000471
           },
-          "scat_baz": 17.27160231877208,
-          "scat_evt": {
-            "sourcedepth": 55.00561,
-            "receiverdepth": 100.0,
-            "distdeg": 40.47113,
-            "phase": "P",
-            "time": 441.89166,
-            "rayparam": 8.200395,
-            "takeoff": 37.011303,
-            "incident": 37.1736,
-            "puristdist": 40.47113,
-            "puristname": "P",
-            "desc": null,
-            "amp": null,
-            "scatter": null,
-            "relative": null,
-            "derivative": null,
-            "pierce": [],
-            "pathlength": null,
-            "pathSegments": []
+          "scat_baz": -141.33489037838027,
+          "sta_scat_phase": "P",
+          "evt_scat": {
+            "sourcedepth": 100.0,
+            "receiverdepth": 956.8327,
+            "distdeg": 9.769331,
+            "phase": "Ped",
+            "time": 134.11317,
+            "rayparam": 7.4547715,
+            "takeoff": 33.31846,
+            "incident": 116.01546,
+            "puristdist": 9.769331,
+            "puristname": "Ped",
+
           }
         },
 ```
