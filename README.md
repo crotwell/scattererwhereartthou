@@ -131,9 +131,7 @@ The saved data looks like:
 
 where the `taup` section is TauP's result for the reference phase, and `swat` contains the possible scatterers.
 
-Each item in the `swat` list looks like this, with the parameters used first, then a list of actual possible scatterers. `backrays` is the result of taup path with the
-given ray parameter leaving the station, shooting the observed ray parameter
-backwards from the station.
+Each item in the `swat` list looks like this, with the parameters used first, then a list of actual possible scatterers.
 
 ```
   "swat": [
@@ -143,7 +141,7 @@ backwards from the station.
       "esbaz": -146.25922172493713,
       "bazoffset": -4.0,
       "bazdelta": 1.0,
-      "eq_scat_phase": "P,p,Ped",
+      "evt_scat_phase": "P,p,Ped",
       "sta_scat_revphase": "P,p,Ped",
       "model": "prem",
       "evtlat": -1.0,
@@ -175,36 +173,37 @@ to the scatterer. `scat_evt` is the travel time information from the scatterer
 back to the event.
 
 ```
-    "scat": {
-       "distdeg": 32.0439,
-       "depth": 861.4825,
-       "time": 328.67746,
-       "lat": 7.510013299538035,
-       "lon": -99.54715097290995
-     },
-     "scat_baz": -141.30302352362247,
-     "sta_scat_phase": "P",
-     "evt_scat": {
-       "sourcedepth": 100.0,
-       "receiverdepth": 861.4825,
-       "distdeg": 8.632519,
-       "phase": "Ped",
-       "time": 121.81161,
-       "rayparam": 7.716091,
-       "takeoff": 34.64896,
-       "incident": 115.716324,
-       "puristdist": 8.632519,
-       "puristname": "Ped",
-       "desc": null,
-       "amp": null,
-       "scatter": null,
-       "relative": null,
-       "derivative": null,
-       "pierce": [],
-       "pathlength": null,
-       "pathSegments": []
-     }
+"scat": {
+      "distdeg": 1.4987907,
+      "depth": 479.86386,
+      "time": 60.51459,
+      "lat": -12.451243435847225,
+      "lon": 119.61748526164293
     },
+    "scat_baz": 194.43251078818807,
+    "sta_scat_phase": "Ped",
+    "sta_scat_rayparam": 4.0,
+    "evt_scat": {
+      "sourcedepth": 0.0,
+      "receiverdepth": 479.86386,
+      "distdeg": 85.582954,
+      "phase": "P",
+      "time": 705.5313,
+      "rayparam": 4.811036,
+      "takeoff": 14.533545,
+      "incident": 26.520409,
+      "puristdist": 85.582954,
+      "puristname": "P",
+      "desc": null,
+      "amp": null,
+      "scatter": null,
+      "relative": null,
+      "derivative": null,
+      "pierce": [],
+      "pathlength": null,
+      "pathSegments": []
+    }
+  },
 ```
 
 Several
