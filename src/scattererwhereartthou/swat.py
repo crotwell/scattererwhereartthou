@@ -55,7 +55,7 @@ class SWAT:
         disconRes = disconParams.calc(self.taupserver)
         backproject_depths = [0]
         for discon in disconRes.models[0].discontinuities:
-            if discon.preferredname in ["moho", "cmb", "iocb"]:
+            if discon.preferredname in ["cmb", "iocb"]:
                 backproject_depths.append(discon.depth)
         return backproject_depths
 
