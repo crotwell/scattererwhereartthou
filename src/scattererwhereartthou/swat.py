@@ -126,7 +126,7 @@ class SWAT:
         prevTD = None
         laterSeg = None
         possibleLegs = []
-        for seg in reversed(sta_scat_arrival.pathSegments):
+        for seg in reversed(sta_scat_arrival.path):
             possibleLegs.append(seg)
             if laterSeg is None:
                 pass
