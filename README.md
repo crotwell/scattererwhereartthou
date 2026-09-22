@@ -12,18 +12,19 @@ a little spherical geometry.
 
 # Requirement
 This makes use of the TauP Toolkit for the path and time calculations
-and the version must be >= 3.2.0.
+and the version must be >= 3.2.1.
 
 # Install
 I assume you are on a vaguely *nix like system, are using conda,
 and can do normal download and install activities.
 
-1) Install version 3.2.0 or greater of the TauP Toolkit.
+1) Install version 3.2.1 or greater of the TauP Toolkit.
 This is available here:
 
 https://doi.org/10.5281/zenodo.10794857
 or
-https://www.seis.sc.edu/downloads/TauP/TauP-3.2.0.tgz
+see instructions here:
+  https://taup.readthedocs.io/en/latest/install.html
 
 2) Probably put the TauP/bin on your path, although you can override this
 
