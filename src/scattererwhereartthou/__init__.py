@@ -1,5 +1,5 @@
 
-__version__="0.0.4"
+__version__="1.0.0"
 
 from .swat import SWAT
 from .plot import mapplot, sliceplot
