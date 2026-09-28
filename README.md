@@ -2,7 +2,7 @@
 Find possible scatterers from slowness and back azimuth
 
 The basic idea is to shoot a ray backwards from the station with the observed
-ray parameter. Then consider each point along the path as if it is a
+slowness. Then consider each point along the path as if it is a
 potential scatterer. For each path point, check to see if a ray from that
 scatterer with the residual travel time can arrive at the earthquake location,
 and with travel distance large enough that a triangle is possible.
@@ -28,27 +28,13 @@ see instructions here:
 
 2) Probably put the TauP/bin on your path, although you can override this
 
-3) Grab the latest taup_python package, here:
+3) Grab the latest scattererwhereartthou package, here:
 
 ```
-pip install taup
+pip install scattererwhereartthou
 ```
 
-4) create a conda environment, python>=3.11, install taup_python
-```
-conda create -n swat python=3.13 -y
-conda activate swat
-pip install taup
-```
-
-5) checkout this repo, install it
-```
-git clone https://github.com/crotwell/scattererwhereartthou.git
-cd scattererwhereartthou
-pip install -v -e .
-```
-
-6) run the example tool
+4) run the example tool
 ```
 swat --evt -1 -101 --sta 34 -80 --delay 4.5 5 5.5 --slow 8.0 --bazoffset 5 1
 ```
@@ -56,12 +42,14 @@ swat --evt -1 -101 --sta 34 -80 --delay 4.5 5 5.5 --slow 8.0 --bazoffset 5 1
 There are more options:
 ```
 swat -h
-usage: swat [-h] [-v] [-c CONF] [--eventdepth d] --evt lat lon --sta lat lon [-p PHASE]
-            --delay s [s ...] [--bazoffset offset delta] --slow p [p ...] [--mindepth d]
-            [--model name] [--taup TAUP] [--json name.json] [--text name.txt] [--map map.png]
-            [--showmap] [--slice slice.png] [--showslice]
+usage: swat [-h] [-v] [-c CONF] [--eventdepth d] --evt lat lon --sta lat lon
+            [-p PHASE] --delay s [s ...] [--bazoffset offset delta]
+            --slow p [p ...] [--mindepth d] [--model name]
+            [--stascatphase phase] [--evtscatphase phase] [--taup TAUP]
+            [--json name.json] [--text name.txt] [--map map.png] [--showmap]
+            [--slice slice.png] [--showslice]
 
-Find possible scatterers. Version=0.0.2
+Find possible scatterers. Version=1.0.0
 
 options:
   -h, --help            show this help message and exit
@@ -73,11 +61,14 @@ options:
   -p, --phase PHASE     reference phase.
   --delay s [s ...]     time delays of arrival relative to reference phase.
   --bazoffset offset delta
-                        observed back azimuth offset of the scatterer relative to the
-                        reference phase and plus minus range.
+                        observed back azimuth offset of the scatterer relative
+                        to the reference phase and plus minus range.
   --slow p [p ...]      observed slowness of suspected scatterer (s/deg)
   --mindepth d          minimum depth of suspected scatterer (km)
   --model name          earth model, as used by TauP.
+  --stascatphase phase  list of reversed phases from the station to the
+                        scatterer.
+  --evtscatphase phase  list of phases from the earthquake to the scatterer.
   --taup TAUP           path to the TauP executable.
   --json name.json      output to json file
   --text name.txt       output points as text to a file
@@ -85,7 +76,6 @@ options:
   --showmap             show matplotlib map to screen
   --slice slice.png     output as matplotlib polar slice
   --showslice           show matplotlib polar slice to screen
-
 ```
 
 # Example
